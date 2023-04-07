@@ -1,0 +1,24 @@
+<div class="gant">
+  <div class="months">
+    <div *ngFor="let month of months">
+      <div class="month">{{ month.monthName }}</div>
+      <div class="days">
+        <div
+          class="day"
+          *ngFor="let item of [].constructor(month.daysInMonth); let i = index"
+        >
+          {{ i + 1 }}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div>
+    <div *ngFor="let section of sections">
+      <app-task
+        *ngFor="let task of section.tasks"
+        [task]="task"
+        [startMonth]="months[0].monthName"
+      ></app-task>
+    </div>
+  </div>
+</div>

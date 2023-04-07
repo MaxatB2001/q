@@ -1,0 +1,28 @@
+
+
+.months {
+    display: flex;
+}
+
+.gant {
+    width: 100%;
+}
+
+.days {
+    display: flex;
+}
+
+.month {
+    text-align: center;
+    border-right: 1px solid lightgray;
+}
+
+.day {
+    padding: 4px;
+    border: 1px solid lightgray;
+    width: 33px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+}
