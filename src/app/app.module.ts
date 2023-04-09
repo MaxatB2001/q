@@ -22,12 +22,7 @@ import { GanttModule } from './gantt/gantt.module';
     KeycloakAngularModule,
     HttpClientModule
   ],
-  providers: [{
-    provide: APP_INITIALIZER,
-    useFactory: initializeKeycloak,
-    multi: true,
-    deps: [KeycloakService]
-  }],
+  
   bootstrap: [AppComponent]
 })
 export class AppModule { }

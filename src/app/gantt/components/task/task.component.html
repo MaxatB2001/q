@@ -1,1 +1,4 @@
-<div *ngIf="task.deadline" (mousedown)="mouseDown($event)" [style.width]="dateDiff * 33 + 'px'" [style.marginLeft]="dateLeftOffset * 33 + 'px'" class="task"></div>
+<div *ngIf="task.deadline" (mousedown)="mouseDown($event)" [style.width]="dateDiff * 33 + 'px'" [style.marginLeft]="dateLeftOffset * 33 + 'px'" class="task">
+  <div (mousedown)="resizeMouseDown($event)" class="resizer left"></div>
+  <div (mousedown)="resizeMouseDown($event)" class="resizer right"></div>
+</div>

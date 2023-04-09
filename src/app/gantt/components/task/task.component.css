@@ -7,4 +7,22 @@
     text-align: center;
     color: white;
     cursor: move;
+    /* transition: margin-left 0.1s; */
+    position: relative;
+}
+
+.resizer {
+    position: absolute;
+    z-index: 2;
+    width: 3px;
+    height: 100%;
+    cursor: col-resize;
+}
+
+.resizer.left {
+    left: -1px;
+}
+
+.resizer.right {
+    right: -1px;
 }
