@@ -26,3 +26,13 @@
 .resizer.right {
     right: -1px;
 }
+
+.parent-task {
+    height: 22px;
+    background-color: green;
+    margin: 5px 0px;
+    border: 1px solid darkgreen;
+    cursor: move;
+    border-radius: 4px;
+    position: relative;
+}

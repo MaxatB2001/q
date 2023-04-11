@@ -1,0 +1,39 @@
+<div class="container">
+  <table>
+    <thead class="header">
+      <tr>
+        <td class="header-item">Задача</td>
+        <td class="header-item">Начало</td>
+        <td class="header-item">Завершение</td>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-template #recursiveList let-tasks>
+        <div *ngFor="let task of tasks">
+          <tr>
+            <td (click)="changeTask(task.id)">
+              <div>{{ task.title }}</div>
+            </td>
+            <td>
+              <div>{{ task.created_at | date }}</div>
+            </td>
+            <td>
+              <div>{{ task.deadline | date }}</div>
+            </td>
+          </tr>
+          <div *ngIf="task.showChildrens && task.childrens.length > 0">
+            <ng-container
+              *ngTemplateOutlet="
+                recursiveList;
+                context: { $implicit: task.childrens }
+              "
+            ></ng-container>
+          </div>
+        </div>
+      </ng-template>
+      <ng-container
+        *ngTemplateOutlet="recursiveList; context: { $implicit: tasks }"
+      ></ng-container>
+    </tbody>
+  </table>
+</div>

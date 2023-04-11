@@ -1,24 +1,41 @@
-<div class="gant">
-  <div class="months">
-    <div *ngFor="let month of months">
-      <div class="month">{{ month.monthName }}</div>
-      <div class="days">
-        <div
-          class="day"
-          *ngFor="let item of [].constructor(month.daysInMonth); let i = index"
-        >
-          {{ i + 1 }}
+<div class="container">
+  <task-list [tasks]="tasks"></task-list>
+  <div class="gant">
+    <div class="months">
+      <div *ngFor="let month of months">
+        <div class="month">{{ month.monthName }}</div>
+        <div class="days">
+          <div
+            class="day"
+            *ngFor="
+              let item of [].constructor(month.daysInMonth);
+              let i = index
+            "
+          >
+            {{ i + 1 }}
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  <div>
-    <div *ngFor="let section of sections">
-      <app-task
-        *ngFor="let task of section.tasks"
-        [task]="task"
-        [startMonth]="months[0].monthName"
-      ></app-task>
+    <div>
+      <ng-template #recursiveList let-tasks>
+        <div *ngFor="let task of tasks">
+        <app-task
+          [task]="task"
+          [startMonth]="months[0].monthName"
+        >
+        </app-task>
+        <div *ngIf="task.showChildrens && task.childrens.length > 0">
+          <ng-container
+            *ngTemplateOutlet="
+              recursiveList;
+              context: { $implicit: task.childrens }
+            "
+          ></ng-container>
+        </div>
+      </div>
+      </ng-template>
+      <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: tasks }"></ng-container>
     </div>
   </div>
 </div>

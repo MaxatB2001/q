@@ -8,6 +8,8 @@ import { initializeKeycloak } from './keycloak/keycloak-init.factory';
 import { KeycloakAngularModule, KeycloakService } from 'keycloak-angular';
 import { HttpClientModule } from '@angular/common/http';
 import { GanttModule } from './gantt/gantt.module';
+import { NgGanttEditorModule } from 'ng-gantt';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -20,9 +22,17 @@ import { GanttModule } from './gantt/gantt.module';
     GanttModule,
     GanttRoutingModule,
     KeycloakAngularModule,
-    HttpClientModule
+    HttpClientModule,
+    NgGanttEditorModule,
+    FormsModule,
+    ReactiveFormsModule
   ],
-  
+  providers: [{
+    provide: APP_INITIALIZER,
+    useFactory: initializeKeycloak,
+    multi: true,
+    deps: [KeycloakService]
+  }],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}

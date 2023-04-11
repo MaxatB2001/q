@@ -1,4 +1,7 @@
-
+.container {
+    display: flex;
+    height: 100%;
+}
 
 .months {
     display: flex;
@@ -18,11 +21,14 @@
 }
 
 .day {
-    padding: 4px;
-    border: 1px solid lightgray;
-    width: 33px;
+    border-right: 1px solid lightgray;
+    border-top: 1px solid lightgray;
+    border-bottom: 1px solid lightgray;
+    width: 26px;
+    padding-top: 3px;
+    padding-bottom: 3px;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 14px;
+    font-size: 12px;
 }

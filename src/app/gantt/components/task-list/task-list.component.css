@@ -1,0 +1,30 @@
+.container {
+  height: 100%;
+
+}
+
+.header {
+  height: 40.5px;
+}
+
+.header-item {
+  background-color: #f8f8f8;
+}
+
+table {
+  border-collapse: collapse;
+  white-space: nowrap;
+  max-width: 100%;
+  white-space: nowrap;
+  border: 1px solid lightgray;
+  box-sizing: content-box;
+}
+
+td {
+  border: 1px solid lightgray;
+  padding: 5px;
+}
+
+tr {
+    height: 22px;
+}

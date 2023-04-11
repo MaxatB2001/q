@@ -9,6 +9,7 @@ import {
   Renderer2,
   SimpleChanges,
 } from '@angular/core';
+import { NewTask } from 'src/app/models/NewTask';
 import { Task } from 'src/app/models/Tasks';
 import { DateHelperService } from 'src/app/services/date-helper.service';
 import { TaskService } from 'src/app/services/task.service';
@@ -20,15 +21,15 @@ import { TaskService } from 'src/app/services/task.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TaskComponent implements OnInit {
-  @Input() task!: Task;
+  @Input() task!: NewTask;
   @Input() startMonth!: string;
   dateDifference = DateHelperService.dateDifference;
   dateDiff = 0;
   dateLeftOffset = 0;
   oldX = 0;
   oldLeft = '';
-  numberOfTicks = 0;
   isMoving = false;
+  resizeOldX = 0;
 
   constructor(
     private el: ElementRef,
@@ -37,6 +38,7 @@ export class TaskComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    console.log(this.task.childrens.length)
     const date1 = new Date(`${this.startMonth} 1 ${new Date().getFullYear()}`);
     const date2 = new Date(this.task.created_at);
     this.dateLeftOffset = this.dateDiffInDays(date1, date2);
@@ -68,13 +70,15 @@ export class TaskComponent implements OnInit {
     const distX = $event.clientX - this.oldX;
     const prevLeft = Number(this.oldLeft.substring(0, this.oldLeft.length - 2));
     const newLeft = prevLeft + distX;
-
+    if (newLeft < -1) {
+      return
+    }
+    
     if (newLeft > prevLeft) {
       this.incrTaskDate(newLeft - prevLeft);
     } else {
       this.decrTaskDate((newLeft - prevLeft) * -1);
     }
-
     window.removeEventListener('mousemove', this.moveHandler);
     window.removeEventListener('mouseup', this.mouseUpHandler);
   };
@@ -87,12 +91,15 @@ export class TaskComponent implements OnInit {
     const distX = $event.clientX - this.oldX;
     const prevLeft = Number(this.oldLeft.substring(0, this.oldLeft.length - 2));
     const newLeft = prevLeft + distX;
-
+    this.dateLeftOffset = newLeft
+    if (newLeft < -1) {
+      return
+    }
     this.el.nativeElement.children[0].style.marginLeft = newLeft + 'px';
   };
 
   incrTaskDate = (diff: number) => {
-    const steps = Math.round(diff / 33);
+    const steps = Math.round(diff / 26);
     if (steps == 0) {
       this.el.nativeElement.children[0].style.marginLeft =
         parseInt(this.el.nativeElement.children[0].style.marginLeft) -
@@ -110,7 +117,7 @@ export class TaskComponent implements OnInit {
   };
 
   decrTaskDate = (diff: number) => {
-    const steps = Math.round(diff / 33);
+    const steps = Math.round(diff / 26);
     if (steps == 0) {
       // this.el.nativeElement.children[0].style.marginLeft = diff * 33 + 'px';
 
@@ -149,28 +156,66 @@ export class TaskComponent implements OnInit {
     const element = this.el.nativeElement.children[0];
     const currentResizer = $event.target as HTMLElement;
     let prevX = $event.clientX;
+    this.resizeOldX = $event.clientX;
 
-    window.addEventListener('mousemove', mousemove);
-    window.addEventListener('mouseup', mouseup);
+    const mouseup = ($event: MouseEvent) => {
+      if (currentResizer?.classList.contains('right')) {
+        const diff = this.resizeOldX - $event.clientX;
+        const steps = Math.round((diff * -1) / 26);
+        let deadlineDate = new Date(this.task.deadline as Date);
+        deadlineDate.setDate(deadlineDate.getDate() + steps);
+        this.task.deadline = deadlineDate;
+        this.dateDiff = this.dateDiffInDays(
+          new Date(this.task.created_at),
+          deadlineDate
+        );
+        this.taskService
+          .updateTask(this.task.id as number, {
+            deadline: deadlineDate,
+          })
+          .subscribe((data) => console.log(data));
+        this.ref.markForCheck();
+      }
+      if (currentResizer?.classList.contains('left')) {
+        const diff = this.resizeOldX - $event.clientX;
+        const steps = Math.round(diff / 26);
+        let startDate = new Date(this.task.created_at);
+        startDate.setDate(startDate.getDate() - steps);
+        this.task.created_at = startDate;
+        this.dateDiff = this.dateDiffInDays(
+          new Date(startDate),
+          new Date(this.task.deadline as Date)
+        );
+        this.dateLeftOffset -= steps;
+        this.taskService
+          .updateTask(this.task.id as number, {
+            created_at: startDate,
+          })
+          .subscribe((data) => console.log(data));
+        this.ref.markForCheck();
+      }
+      window.removeEventListener('mousemove', mousemove);
+      window.removeEventListener('mouseup', mouseup);
+    };
 
-    function mousemove($event: MouseEvent) {
+    const mousemove = ($event: MouseEvent) => {
       const rect = element.getBoundingClientRect();
 
       if (currentResizer?.classList.contains('right')) {
         element.style.width = rect.width - (prevX - $event.clientX) + 'px';
       }
       if (currentResizer?.classList.contains('left')) {
-        console.log(prevX);
-        
         element.style.width = rect.width + (prevX - $event.clientX) + 'px';
-        element.style.marginLeft = rect.left - (prevX - $event.clientX) + 'px';
+        element.style.marginLeft = parseInt(this.el.nativeElement.children[0].style.marginLeft) - (prevX - $event.clientX) + 'px';        
       }
       prevX = $event.clientX;
-    }
+    };
 
-    function mouseup() {
-      window.removeEventListener('mousemove', mousemove);
-      window.removeEventListener('mouseup', mouseup);
-    }
+    window.addEventListener('mousemove', mousemove);
+    window.addEventListener('mouseup', mouseup);
   };
+
+  openTask() {
+    console.log("click")
+  }
 }
