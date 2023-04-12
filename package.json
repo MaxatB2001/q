@@ -22,7 +22,9 @@
     "jsgantt-improved": "^2.8.5",
     "keycloak-angular": "^13.0.0",
     "keycloak-js": "^20.0.5",
+    "leader-line": "^1.0.7",
     "ng-gantt": "^2.5.0",
+    "plain-draggable": "^2.5.14",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.12.0"

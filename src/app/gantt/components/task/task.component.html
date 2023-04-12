@@ -1,9 +1,10 @@
 <div
   *ngIf="task.deadline"
   (dblclick)="openTask()"
+  [attr.id]="task.id"
   (mousedown)="mouseDown($event)"
   [style.width]="dateDiff * 26 + 'px'"
-  [style.marginLeft]="dateLeftOffset * 26 + 'px'"
+  [style.left]="dateLeftOffset * 26 + 'px'"
   [ngClass]="task.childrens.length == 0 ? 'task': 'parent-task'"
 >
   <div (mousedown)="resizeMouseDown($event)" class="resizer left"></div>

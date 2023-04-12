@@ -8,4 +8,6 @@ export interface NewTask {
     status?: TaskStatus;
     childrens: NewTask[];
     showChildrens: boolean;
+    next?: number;
+    prev?:number
 }

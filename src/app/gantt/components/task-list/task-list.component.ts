@@ -10,7 +10,7 @@ import { TaskSection } from 'src/app/models/task-section.model';
 export class TaskListComponent {
   @Input() tasks: NewTask[] = []
 
-  changeTask = (id: number) => {
+  changeTask = (id: any) => {
     const task = this.tasks.find(task => task.id == id);
     (task as NewTask).showChildrens = !task?.showChildrens
   }

@@ -8,14 +8,15 @@ export const tasks: NewTask[] = [
     deadline: new Date('2023-05-20T21:00:00.000Z'),
     created_at: new Date('2023-04-19T13:40:49.907Z'),
     status: TaskStatus.OPEN,
+    next: 10,
     childrens: [{
         id: 10,
         title: 'test 2',
-        deadline: new Date('2023-05-14T21:00:00.000Z'),
-        created_at: new Date('2023-04-26T13:40:57.290Z'),
+        deadline: new Date('2023-05-27T21:00:00.000Z'),
+        created_at: new Date('2023-05-21T13:40:57.290Z'),
         status: TaskStatus.OPEN,
         childrens: [],
-        showChildrens: true
+        showChildrens: true,
       },
       {
         id: 11,
@@ -51,7 +52,8 @@ export const tasks: NewTask[] = [
             created_at: new Date('2023-04-26T13:40:57.290Z'),
             status: TaskStatus.OPEN,
             childrens: [],
-            showChildrens: true
+            showChildrens: true,
+            next: 6
           },
           {
             id: 6,

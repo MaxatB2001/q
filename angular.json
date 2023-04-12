@@ -27,7 +27,7 @@
             "styles": [
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": ["node_modules/leader-line/leader-line.min.js", "node_modules/plain-draggable/plain-draggable.min.js"]
           },
           "configurations": {
             "production": {

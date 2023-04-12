@@ -12,6 +12,7 @@
 }
 
 table {
+  
   border-collapse: collapse;
   white-space: nowrap;
   max-width: 100%;
@@ -23,8 +24,10 @@ table {
 td {
   border: 1px solid lightgray;
   padding: 5px;
+  width: 100%;
 }
 
 tr {
     height: 22px;
+    width: 100%;
 }

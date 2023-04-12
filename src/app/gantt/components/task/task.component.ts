@@ -6,13 +6,15 @@ import {
   Input,
   OnChanges,
   OnInit,
-  Renderer2,
-  SimpleChanges,
+  AfterViewInit,
+  OnDestroy,
 } from '@angular/core';
 import { NewTask } from 'src/app/models/NewTask';
 import { Task } from 'src/app/models/Tasks';
 import { DateHelperService } from 'src/app/services/date-helper.service';
 import { TaskService } from 'src/app/services/task.service';
+
+declare var LeaderLine: any;
 
 @Component({
   selector: 'app-task',
@@ -20,7 +22,7 @@ import { TaskService } from 'src/app/services/task.service';
   styleUrls: ['./task.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TaskComponent implements OnInit {
+export class TaskComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() task!: NewTask;
   @Input() startMonth!: string;
   dateDifference = DateHelperService.dateDifference;
@@ -30,15 +32,21 @@ export class TaskComponent implements OnInit {
   oldLeft = '';
   isMoving = false;
   resizeOldX = 0;
+  line: any;
 
   constructor(
     private el: ElementRef,
     private ref: ChangeDetectorRef,
     private taskService: TaskService
   ) {}
+  ngOnDestroy(): void {
+    if (this.line) {
+      this.line.remove()
+    }
+  }
+  ngAfterViewInit(): void {}
 
   ngOnInit(): void {
-    console.log(this.task.childrens.length)
     const date1 = new Date(`${this.startMonth} 1 ${new Date().getFullYear()}`);
     const date2 = new Date(this.task.created_at);
     this.dateLeftOffset = this.dateDiffInDays(date1, date2);
@@ -47,6 +55,19 @@ export class TaskComponent implements OnInit {
         new Date(this.task.created_at),
         new Date(this.task.deadline)
       );
+    }
+    if (this.task.next) {      
+      setTimeout(() => {
+        const element = document.getElementById(`${this.task.id}`);
+        const element2 = document.getElementById(`${this.task.next}`);
+        this.line = new LeaderLine(element, element2, {
+          size: 1.5,
+          color: '#ff7f50',
+          path: 'fluid',
+          startSocket: "right",
+          endSocker: "left"
+        });
+      });
     }
   }
 
@@ -60,30 +81,42 @@ export class TaskComponent implements OnInit {
   mouseDown = ($event: MouseEvent) => {
     this.isMoving = true;
     this.oldX = $event.clientX;
-    this.oldLeft = this.el.nativeElement.children[0].style.marginLeft;
+    this.oldLeft = this.el.nativeElement.children[0].style.left;
+
     window.addEventListener('mousemove', this.moveHandler);
     window.addEventListener('mouseup', this.mouseUpHandler, { once: true });
   };
 
   mouseUpHandler = ($event: MouseEvent) => {
+    if (this.line) {
+      setTimeout(() => {
+        this.line.position()
+      })
+    }
     this.isMoving = false;
     const distX = $event.clientX - this.oldX;
     const prevLeft = Number(this.oldLeft.substring(0, this.oldLeft.length - 2));
     const newLeft = prevLeft + distX;
     if (newLeft < -1) {
-      return
+      return;
     }
-    
+
     if (newLeft > prevLeft) {
       this.incrTaskDate(newLeft - prevLeft);
     } else {
       this.decrTaskDate((newLeft - prevLeft) * -1);
-    }
+    } 
     window.removeEventListener('mousemove', this.moveHandler);
     window.removeEventListener('mouseup', this.mouseUpHandler);
   };
 
   moveHandler = ($event: MouseEvent) => {
+    if (this.line) {
+      setTimeout(() => {
+        this.line.position()
+      })
+    }
+
     $event.preventDefault();
     if (!this.isMoving) {
       return;
@@ -91,20 +124,18 @@ export class TaskComponent implements OnInit {
     const distX = $event.clientX - this.oldX;
     const prevLeft = Number(this.oldLeft.substring(0, this.oldLeft.length - 2));
     const newLeft = prevLeft + distX;
-    this.dateLeftOffset = newLeft
+    this.dateLeftOffset = newLeft;
     if (newLeft < -1) {
-      return
+      return;
     }
-    this.el.nativeElement.children[0].style.marginLeft = newLeft + 'px';
+    this.el.nativeElement.children[0].style.left = newLeft + 'px';
   };
 
   incrTaskDate = (diff: number) => {
     const steps = Math.round(diff / 26);
     if (steps == 0) {
-      this.el.nativeElement.children[0].style.marginLeft =
-        parseInt(this.el.nativeElement.children[0].style.marginLeft) -
-        diff +
-        'px';
+      this.el.nativeElement.children[0].style.left =
+        parseInt(this.el.nativeElement.children[0].style.left) - diff + 'px';
       return;
     }
     let startDate = new Date(this.task.created_at);
@@ -152,6 +183,7 @@ export class TaskComponent implements OnInit {
   };
 
   resizeMouseDown = ($event: MouseEvent) => {
+    
     $event.stopPropagation();
     const element = this.el.nativeElement.children[0];
     const currentResizer = $event.target as HTMLElement;
@@ -159,6 +191,11 @@ export class TaskComponent implements OnInit {
     this.resizeOldX = $event.clientX;
 
     const mouseup = ($event: MouseEvent) => {
+      if (this.line) {
+        setTimeout(() => {
+          this.line.position()
+        })
+      }
       if (currentResizer?.classList.contains('right')) {
         const diff = this.resizeOldX - $event.clientX;
         const steps = Math.round((diff * -1) / 26);
@@ -175,6 +212,9 @@ export class TaskComponent implements OnInit {
           })
           .subscribe((data) => console.log(data));
         this.ref.markForCheck();
+        if (this.line) {
+        this.line.position()
+      }
       }
       if (currentResizer?.classList.contains('left')) {
         const diff = this.resizeOldX - $event.clientX;
@@ -193,12 +233,20 @@ export class TaskComponent implements OnInit {
           })
           .subscribe((data) => console.log(data));
         this.ref.markForCheck();
+        if (this.line) {
+          this.line.position()
+        }
       }
       window.removeEventListener('mousemove', mousemove);
       window.removeEventListener('mouseup', mouseup);
     };
 
     const mousemove = ($event: MouseEvent) => {
+      if (this.line) {
+        setTimeout(() => {
+          this.line.position()
+        })
+      }
       const rect = element.getBoundingClientRect();
 
       if (currentResizer?.classList.contains('right')) {
@@ -206,7 +254,10 @@ export class TaskComponent implements OnInit {
       }
       if (currentResizer?.classList.contains('left')) {
         element.style.width = rect.width + (prevX - $event.clientX) + 'px';
-        element.style.marginLeft = parseInt(this.el.nativeElement.children[0].style.marginLeft) - (prevX - $event.clientX) + 'px';        
+        element.style.left =
+          parseInt(this.el.nativeElement.children[0].style.left) -
+          (prevX - $event.clientX) +
+          'px';
       }
       prevX = $event.clientX;
     };
@@ -216,6 +267,6 @@ export class TaskComponent implements OnInit {
   };
 
   openTask() {
-    console.log("click")
+    console.log('click');
   }
 }

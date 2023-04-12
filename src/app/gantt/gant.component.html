@@ -17,12 +17,13 @@
         </div>
       </div>
     </div>
-    <div>
+    <div style="position: relative;">
       <ng-template #recursiveList let-tasks>
         <div *ngFor="let task of tasks">
         <app-task
           [task]="task"
           [startMonth]="months[0].monthName"
+          
         >
         </app-task>
         <div *ngIf="task.showChildrens && task.childrens.length > 0">
@@ -39,3 +40,13 @@
     </div>
   </div>
 </div>
+
+<!-- <div #container class="container" style="background-color: gray;">
+  <div id="1" #draggable class="draggable">
+    <input type="text" />
+  </div>
+
+  <div id="2" #draggable2 class="draggable">
+    <input type="text" />
+  </div>
+</div> -->

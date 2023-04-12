@@ -1,6 +1,7 @@
 .container {
     display: flex;
     height: 100%;
+    position: relative;
 }
 
 .months {
@@ -32,3 +33,4 @@
     align-items: center;
     font-size: 12px;
 }
+  
